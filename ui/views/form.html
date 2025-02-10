@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Pegawai Keluar</title>
+    <link rel="stylesheet" href="/ui/css/bootstrap.min.css">
+    <link href="/ui/css/templatemo-xtra-blog.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Xtra Blog</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile">Profile</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Form -->
+    <div class="container mt-5">
+        <h2 class="mb-4">Form Pegawai Keluar</h2>
+        <hr>
+        <form action="/form" method="POST" class="p-4 border rounded bg-light">
+            <div class="mb-3">
+                <label for="nama" class="form-label">Nama Pegawai</label>
+                <input type="text" class="form-control" id="nama" name="nama" value="{{ @pegawai.nama }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="jabatan" class="form-label">Jabatan</label>
+                <input type="text" class="form-control" id="jabatan" name="jabatan" value="{{ @pegawai.jabatan }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="jam_keluar" class="form-label">Jam Keluar</label>
+                <input type="time" class="form-control" id="jam_keluar" name="jam_keluar" value="{{ @pegawai.jam_keluar }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="jam_masuk" class="form-label">Jam Masuk</label>
+                <input type="time" class="form-control" id="jam_masuk" name="jam_masuk" value="{{ @pegawai.jam_masuk }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="keperluan" class="form-label">Keperluan Keluar</label>
+                <select class="form-control" id="keperluan" name="keperluan" required>
+                    <option value="dinas" {{ @pegawai.keperluan=='dinas' ? 'selected' : '' }}>Dinas</option>
+                    <option value="pribadi" {{ @pegawai.keperluan=='pribadi' ? 'selected' : '' }}>Pribadi</option>
+                </select>
+            </div>
+            <div class="mb-3" id="alasanPribadiContainer"
+                <check if="@pegawai.keperluan=='pribadi'"> style="display: block;"</check>
+                <check if="@pegawai.keperluan!='pribadi'"> style="display: none;"</check>
+                <label for="alasan_pribadi" class="form-label">Alasan Keperluan Pribadi</label>
+                <input type="text" class="form-control" id="alasan_pribadi" name="alasan_pribadi" value="{{ @pegawai.alasan_pribadi }}">
+            </div>
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="/ui/js/jquery.min.js"></script>
+    <script src="/ui/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#keperluan').change(function() {
+                if ($(this).val() === 'pribadi') {
+                    $('#alasanPribadiContainer').show();
+                    $('#alasan_pribadi').attr('required', true);
+                } else {
+                    $('#alasanPribadiContainer').hide();
+                    $('#alasan_pribadi').removeAttr('required');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
