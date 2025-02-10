@@ -38,7 +38,7 @@ $f3->route('GET /home', function($f3) {
     if (!$f3->exists('SESSION.user')) {
         $f3->reroute('/');
     }
-    echo \Template::instance()->render('index.php');
+    echo \Template::instance()->render('home.php');
 });
 
 // Halaman form (cek sesi)
