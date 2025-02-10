@@ -1,3 +1,34 @@
+<?php
+session_start();
+require 'config.php'; // Pastikan file ini ada dan berisi koneksi database
+
+// Jika sudah login, arahkan ke halaman utama
+if (isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit();
+}
+
+// Cek apakah form dikirim
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    // Ambil data user dari database
+    $stmt = $pdo->prepare("SELECT id, password FROM users WHERE username = ?");
+    $stmt->execute([$username]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Validasi password
+    if ($user && password_verify($password, $user['password'])) {
+        $_SESSION['user_id'] = $user['id'];
+        header("Location: index.php");
+        exit();
+    } else {
+        $error = "Username atau password salah!";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +45,12 @@
         <main class="tm-main d-flex justify-content-center align-items-center" style="height: 100vh;">
             <div class="col-md-6 col-lg-4">
                 <h2 class="tm-color-primary text-center">Login</h2>
-                <form method="POST" action="/login" class="tm-contact-form">
+                
+                <?php if (isset($error)): ?>
+                    <div class="alert alert-danger"><?= $error ?></div>
+                <?php endif; ?>
+
+                <form method="POST" action="" class="tm-contact-form">
                     <div class="form-group">
                         <label for="username" class="tm-color-primary">Nama</label>
                         <input class="form-control" name="username" id="username" type="text" required>

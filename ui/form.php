@@ -1,3 +1,28 @@
+<?php
+session_start();
+if (!isset($_SESSION['user'])) {
+    header('Location: login.php');
+    exit();
+}
+
+require 'config.php'; // File untuk koneksi ke database
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nama = $_POST['nama'];
+    $jabatan = $_POST['jabatan'];
+    $jam_keluar = $_POST['jam_keluar'];
+    $jam_masuk = $_POST['jam_masuk'];
+    $keperluan = $_POST['keperluan'];
+    $alasan_pribadi = isset($_POST['alasan_pribadi']) ? $_POST['alasan_pribadi'] : NULL;
+
+    $stmt = $pdo->prepare("INSERT INTO pegawai_keluar (nama, jabatan, jam_keluar, jam_masuk, keperluan, alasan_pribadi) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$nama, $jabatan, $jam_keluar, $jam_masuk, $keperluan, $alasan_pribadi]);
+
+    header('Location: profile.php');
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,33 +33,12 @@
     <link href="/ui/css/templatemo-xtra-blog.css" rel="stylesheet">
 </head>
 <body>
-
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">Xtra Blog</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/home">Home</a>
-                    </li>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/profile">Profile</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Form Input -->
+    <?php include 'navbar.php'; ?>
+    
     <div class="container mt-5">
         <h2 class="mb-4">Form Pegawai Keluar</h2>
         <hr>
-
-        <form action="/submit" method="POST" class="p-4 border rounded bg-light">
+        <form action="" method="POST" class="p-4 border rounded bg-light">
             <div class="mb-3">
                 <label for="nama" class="form-label">Nama Pegawai</label>
                 <input type="text" class="form-control" id="nama" name="nama" required>
@@ -58,13 +62,10 @@
                     <option value="pribadi">Pribadi</option>
                 </select>
             </div>
-
-            <!-- Input tambahan jika "Pribadi" dipilih -->
             <div class="mb-3" id="alasanPribadiContainer" style="display: none;">
                 <label for="alasan_pribadi" class="form-label">Alasan Keperluan Pribadi</label>
                 <input type="text" class="form-control" id="alasan_pribadi" name="alasan_pribadi">
             </div>
-
             <div class="text-end">
                 <button type="submit" class="btn btn-primary">Add</button>
             </div>
@@ -73,7 +74,6 @@
 
     <script src="/ui/js/jquery.min.js"></script>
     <script src="/ui/js/bootstrap.bundle.min.js"></script>
-
     <script>
         $(document).ready(function() {
             $('#keperluan').change(function() {
