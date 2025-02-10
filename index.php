@@ -1,12 +1,55 @@
 <?php
-	//F3 requires base.php at the very least.
-	$f3=require('lib/base.php');
+require 'vendor/autoload.php';
 
-	//All globals for F3 app are set here
-	$f3->config('config/config.ini');
+$f3 = \Base::instance();
+$f3->set('UI', 'ui/');
 
-	//All routes are handled here instead of littering the index file
-	$f3->config('config/routes.ini');
+// Redirect ke login jika belum ada sesi
+$f3->route('GET /', function($f3) {
+    if (!$f3->exists('SESSION.user')) {
+        echo \Template::instance()->render('login.html');
+    } else {
+        $f3->reroute('/home');
+    }
+});
 
-	//Starts the F3 app
-	$f3->run();
+// Proses login (POST /login)
+$f3->route('POST /login', function($f3) {
+    $username = $f3->get('POST.username');
+    $password = $f3->get('POST.password');
+
+    // Contoh autentikasi (username: admin, password: 1234)
+    if ($username === 'admin' && $password === '1234') {
+        $f3->set('SESSION.user', $username);
+        $f3->reroute('/home');
+    } else {
+        echo "<script>alert('Login gagal! Periksa nama dan password.');</script>";
+        echo \Template::instance()->render('login.html');
+    }
+});
+
+// Halaman utama setelah login
+$f3->route('GET /home', function($f3) {
+    if (!$f3->exists('SESSION.user')) {
+        $f3->reroute('/');
+    }
+    echo \Template::instance()->render('index.html');
+});
+
+// Halaman utama ke form 
+$f3->route('GET /form', function($f3) {
+    echo \Template::instance()->render('form.html');
+});
+
+// Navbar ke profile
+$f3->route('GET /profile', function($f3) {
+    echo \Template::instance()->render('profile.html');
+});
+
+// Logout
+$f3->route('GET /logout', function($f3) {
+    $f3->clear('SESSION');
+    $f3->reroute('/');
+});
+
+$f3->run();
